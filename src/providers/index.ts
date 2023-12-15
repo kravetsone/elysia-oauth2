@@ -1,20 +1,18 @@
-import Elysia from 'elysia'
+export * from "./vk"
 
 export interface Auth2Options {
-  client: {
-    id: string
-    secret: string
-  }
-  redirectURI: string
-  responseType?: 'code'
-  state?: string
+    client: {
+        id: string
+        secret: string
+    }
+    callbackURI: string
+    responseType?: "code"
+    startRedirectPath?: string
+    callbackPath?: string
 }
 
-export interface ProviderOptions {
-  authorizationURI: string
-  accessTokenURI: string
-}
-
-export class Auth2Provider {
-  constructor() {}
+export interface Provider {
+    authorizationURI: string
+    accessTokenURI: string
+    generateURI: (state?: string) => string
 }

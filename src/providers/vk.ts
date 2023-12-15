@@ -1,5 +1,5 @@
 import fastQueryString from "fast-querystring"
-import { Auth2Options, Auth2Provider, ProviderOptions } from "."
+import { Auth2Options, Provider } from "."
 
 type TScope =
     | "notify"
@@ -22,31 +22,53 @@ type TScope =
     | "market"
     | "phone_number"
 
-export interface VKOptions extends Auth2Options {
+export interface VKOptions extends Omit<Auth2Options, "responseType"> {
     display?: "page" | "popup" | "mobile"
     scope?: TScope[] | string[]
 }
 
-export class VKAuth2Provider extends Auth2Provider implements ProviderOptions {
-    authorizationURI = "https://oauth.vk.com/authorize?"
+export interface AccessTokenResponse {
+    access_token: string
+    expires_in: string
+    user_id: string
+    email?: string
+}
+
+export class VKAuth2Provider implements Provider {
+    authorizationURI = "https://oauth.vk.com/authorize"
     accessTokenURI = "https://oauth.vk.com/access_token"
     options: VKOptions
 
     constructor(options: VKOptions) {
-        super()
         this.options = options
     }
 
-    generateAuth2URI() {
+    generateURI(state?: string) {
         return (
             this.authorizationURI +
+            "?" +
             fastQueryString.stringify({
                 client_id: this.options.client.id,
-                redirect_uri: this.options.redirectURI,
+                redirect_uri: this.options.callbackURI,
                 response_type: "code",
                 scope: this.options.scope?.join(","),
-                state: this.options.state,
+                state,
             })
         )
+    }
+
+    async getAccessToken(code: string) {
+        const res = await fetch(
+            this.accessTokenURI +
+                "?" +
+                fastQueryString.stringify({
+                    client_id: this.options.client.id,
+                    client_secret: this.options.client.secret,
+                    redirect_uri: this.options.callbackURI,
+                    code,
+                }),
+        )
+
+        return res.json<AccessTokenResponse>()
     }
 }
