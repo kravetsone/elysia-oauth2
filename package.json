@@ -1,0 +1,20 @@
+{
+    "name": "elysia-oauth2",
+    "module": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "lint": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\"",
+        "lint:fix": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\" --fix"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0",
+        "elysia": "^0.7.0",
+        "fast-querystring": "^1.0.0"
+    },
+    "devDependencies": {
+        "bun-types": "latest",
+        "eslint": "^8.55.0",
+        "eslint-kit": "^10.6.0",
+        "prettier": "^3.1.1"
+    }
+}
