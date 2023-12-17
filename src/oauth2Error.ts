@@ -1,10 +1,16 @@
 export class Oauth2Error extends Error {
-    error_description: string;
+    description: string
 
-    constructor({error, error_description}: {error: string; error_description: string}) {
+    constructor({
+        error,
+        error_description: description,
+    }: {
+        error: string
+        error_description: string
+    }) {
+        console.log(error, description)
         super()
-        this.message = error;
-        this.error_description = error_description;
-        
+        this.message = error
+        this.description = description
     }
 }

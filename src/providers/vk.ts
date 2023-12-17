@@ -1,6 +1,6 @@
 import fastQueryString from "fast-querystring"
-import { Auth2Options, Provider } from "."
 import { Oauth2Error } from "../oauth2Error"
+import { AccessTokenFailure, Auth2Options, Provider } from "."
 
 type TScope =
     | "notify"
@@ -23,22 +23,17 @@ type TScope =
     | "market"
     | "phone_number"
 
-export interface VKOptions extends Omit<Auth2Options<AccessTokenResponse>, "responseType"> {
+export interface VKOptions
+    extends Omit<Auth2Options<VKAccessTokenResponse>, "responseType"> {
     display?: "page" | "popup" | "mobile"
     scope?: TScope[] | string[]
-   
 }
 
-export interface AccessTokenResponse {
+export interface VKAccessTokenResponse {
     access_token: string
     expires_in: string
     user_id: string
     email?: string
-}
-
-export interface AccessTokenFailure {
-  error: string;
-  error_description: string;
 }
 
 export class VKAuth2Provider<T extends VKOptions> implements Provider {
@@ -50,10 +45,7 @@ export class VKAuth2Provider<T extends VKOptions> implements Provider {
         this.options = options
     }
 
-    generateURI(
-        state?: string,
-    ) {
- 
+    generateURI(state?: string) {
         return (
             this.authorizationURI +
             "?" +
@@ -78,9 +70,9 @@ export class VKAuth2Provider<T extends VKOptions> implements Provider {
                     code,
                 }),
         )
-        
-        if(!res.ok) throw new Oauth2Error(await res.json<AccessTokenFailure>())
-        
-        return res.json<AccessTokenResponse>()
+
+        if (!res.ok) throw new Oauth2Error(await res.json<AccessTokenFailure>())
+
+        return res.json<VKAccessTokenResponse>()
     }
 }

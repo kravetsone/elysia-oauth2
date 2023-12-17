@@ -1,42 +1,36 @@
-import Elysia, { t } from "elysia"
+import Elysia, { DecoratorBase } from "elysia"
 
+export * from "./discord"
 export * from "./vk"
 
 // [INFO] Elysia doesn't re-export TSchema :(
-export type TSchema = ReturnType<typeof t.Index>;
+// export type TSchema = ReturnType<typeof t.Index>;
+
+export interface AccessTokenFailure {
+    error: string
+    error_description: string
+}
 
 export interface Auth2Options<T> {
     client: {
         id: string
         secret: string
     }
-    callbackURI: string
     responseType?: "code"
     startRedirectPath?: string
-    callbackPath?: string
+    callback: {
+        path?: string
+        //get Elysia handler
+        onSuccess: Parameters<
+            ElysiaWithCustomRequest<{
+                accessTokenData: T
+                state: string | null
+            }>["get"]
+        >[1]
+    }
+    callbackURI: string
     // [INFO] implement typed state later...
     // state?: TSchema
-    onSuccess: Parameters<
-        InstanceType<
-            typeof Elysia<
-                "",
-                {
-                    request: {
-                        accessTokenData: T
-                        state: string | null
-                    }
-                    store: {}
-                },
-                {
-                    type: {}
-                    error: {}
-                },
-                {},
-                {},
-                false
-            >
-        >["get"]
-    >[1]
 }
 
 export interface Provider {
@@ -45,4 +39,23 @@ export interface Provider {
     accessTokenURI: string
     generateURI: (state?: string) => string
     getAccessToken: (code: string) => Promise<any>
+    options: Auth2Options<any>
 }
+
+export type ElysiaWithCustomRequest<T extends DecoratorBase["request"]> =
+    InstanceType<
+        typeof Elysia<
+            "",
+            {
+                request: T
+                store: {}
+            },
+            {
+                type: {}
+                error: {}
+            },
+            {},
+            {},
+            false
+        >
+    >

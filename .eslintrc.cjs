@@ -3,7 +3,7 @@ const { configure, presets } = require("eslint-kit")
 module.exports = configure({
     allowDebug: process.env.NODE_ENV !== "production",
 
-    root: {
+    extend: {
         rules: {
             "@typescript-eslint/ban-types": "off",
         },
