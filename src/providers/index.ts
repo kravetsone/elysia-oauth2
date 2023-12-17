@@ -1,6 +1,7 @@
 import Elysia, { DecoratorBase } from "elysia"
 
 export * from "./discord"
+export * from "./google"
 export * from "./vk"
 
 // [INFO] Elysia doesn't re-export TSchema :(

@@ -2,7 +2,7 @@ import fastQueryString from "fast-querystring"
 import { Oauth2Error } from "../oauth2Error"
 import { AccessTokenFailure, Auth2Options, Provider } from "."
 
-export type TScope =
+type TScope =
     | "activities.read"
     | "activities.write"
     | "applications.builds.read"
@@ -38,7 +38,10 @@ export interface DiscordOptions
      * prompt controls how the authorization flow handles existing authorizations. If a user has previously authorized your application with the requested scopes and prompt is set to consent, it will request them to reapprove their authorization. If set to none, it will skip the authorization screen and redirect them back to your redirect URI without requesting their authorization. For passthrough scopes, like bot and webhook.incoming, authorization is always required.
      */
     prompt?: "consent" | "none" | string
-    // @see https://discord.com/developers/docs/topics/oauth2#shared-resources-oauth2-scopes
+
+    /**
+     * [About scopes](https://discord.com/developers/docs/topics/oauth2#shared-resources-oauth2-scopes)
+     */
     scope: TScope[] | string[]
 }
 

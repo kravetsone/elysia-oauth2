@@ -1,11 +1,16 @@
 import Elysia, { t } from "elysia"
 import { Oauth2Error } from "./oauth2Error"
-import { Provider, VKAuth2Provider } from "./providers"
-import { DiscordProvider } from "./providers/discord"
+import {
+    DiscordProvider,
+    GoogleProvider,
+    Provider,
+    VKAuth2Provider,
+} from "./providers"
 
 const providersMapper = {
     vk: VKAuth2Provider,
     discord: DiscordProvider,
+    google: GoogleProvider,
 }
 
 type TProviderNames = keyof typeof providersMapper
