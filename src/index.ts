@@ -33,6 +33,9 @@ export function oauth2<T extends ElysiaAuth2Options>(options: T) {
         })
         .derive(({ set }) => ({
             oauth2: {
+                /**
+                 * Generate and redirect to oauth2 link
+                 */
                 authorize: <P extends keyof T["providers"]>(
                     providerName: P,
                     state?: string,
@@ -50,10 +53,15 @@ export function oauth2<T extends ElysiaAuth2Options>(options: T) {
                     )
                     set.redirect = provider.generateURI(state)
                 },
-                callback: (
-                    providerName: keyof typeof options.providers,
+                /**
+                 * Get the access token data. The code from the provider redirection is required
+                 */
+                getAccessToken: <T extends keyof typeof options.providers>(
+                    providerName: T,
                     code: string,
-                ) => {
+                ): ReturnType<
+                    (typeof providersMapper)[T]["prototype"]["getAccessToken"]
+                > => {
                     // [INFO] keyof T["providers"] is not union type...
                     const name = providerName as TProviderNames
                     if (!options.providers[name])
@@ -98,17 +106,12 @@ export function oauth2<T extends ElysiaAuth2Options>(options: T) {
                 (app) =>
                     app
                         .derive(async ({ query }) => {
-                            //[INFO]: Why it handle any route registered after(
                             const accessTokenData =
                                 await provider.getAccessToken(query.code)
 
                             return { accessTokenData, state: query.state }
                         })
-                        .get(
-                            "/",
-                            //@ts-ignore ... [TODO]: fix
-                            provider.options.callback.onSuccess,
-                        ),
+                        .get("/", provider.options.callback.onSuccess),
             )
     }
     return app

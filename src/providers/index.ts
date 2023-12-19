@@ -25,13 +25,11 @@ export interface Auth2Options<T> {
         onSuccess: Parameters<
             ElysiaWithCustomRequest<{
                 accessTokenData: T
-                state: string | null
+                state: string | undefined
             }>["get"]
         >[1]
     }
     callbackURI: string
-    // [INFO] implement typed state later...
-    // state?: TSchema
 }
 
 export interface Provider {
