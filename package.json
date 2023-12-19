@@ -1,28 +1,25 @@
 {
-  "name": "elysia-oauth2",
-  "version": "0.0.3",
-  "author": "kravets",
-  "main": "dist/index.js",
-  "devDependencies": {
-    "bun-types": "latest",
-    "eslint": "^8.55.0",
-    "eslint-kit": "^10.6.0",
-    "prettier": "^3.1.1",
-    "typescript": "^5.3.3"
-  },
-  "peerDependencies": {
-    "elysia": "^0.7.0",
-    "fast-querystring": "^1.0.0"
-  },
-  "description": "",
-  "license": "ISC",
-  "scripts": {
-    "prepublishOnly": "tsc",
-    "lint": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\"",
-    "lint:fix": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\" --fix"
-  },
-  "types": "dist/index.d.ts",
-  "dependencies": {
-    "@grotto/logysia": "^0.1.1"
-  }
+    "name": "elysia-oauth2",
+    "version": "0.0.4",
+    "author": "kravets",
+    "main": "dist/index.js",
+    "devDependencies": {
+        "bun-types": "latest",
+        "eslint": "^8.55.0",
+        "eslint-kit": "^10.6.0",
+        "prettier": "^3.1.1",
+        "typescript": "^5.3.3"
+    },
+    "peerDependencies": {
+        "elysia": "^0.7.0",
+        "fast-querystring": "^1.0.0"
+    },
+    "description": "",
+    "license": "ISC",
+    "scripts": {
+        "prepublishOnly": "tsc",
+        "lint": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\"",
+        "lint:fix": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\" --fix"
+    },
+    "types": "dist/index.d.ts"
 }
