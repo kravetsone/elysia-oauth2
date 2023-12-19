@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "lib": ["ESNext"],
-    "module": "esnext",
+    "module": "CommonJS",
     "target": "esnext",
-    "moduleResolution": "bundler",
+    // "moduleResolution": "bundler",
+    "declaration": true,
     "moduleDetection": "force",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "composite": true,
+    // "allowImportingTsExtensions": true,
+    // // "noEmit": true,
+    // // "composite": true,
     "strict": true,
     "downlevelIteration": true,
     "skipLibCheck": true,
@@ -17,7 +18,10 @@
     "types": [
       "bun-types" // add Bun global
     ],
+    
     "rootDir": "./src",
     "outDir": "./dist"
-  }
+  },
+  "include": ["src"],
+  "exclude": ["src/test.ts"]
 }
