@@ -82,28 +82,34 @@ export function oauth2<T extends ElysiaAuth2Options>(options: T) {
                 oauth2.authorize(providerName),
             )
         if (provider.options.callback.path)
-            app.guard({
-                query: t.Object(
-                    {
-                        code: t.String(),
-                        state: t.Nullable(t.String()),
-                    },
-                    {
-                        additionalProperties: true,
-                    },
-                ),
-            })
-                .derive(async ({ query }) => {
-                    const accessTokenData = await provider.getAccessToken(
-                        query.code,
-                    )
+            app.group(
+                provider.options.callback.path,
+                {
+                    query: t.Object(
+                        {
+                            code: t.String(),
+                            state: t.Optional(t.String()),
+                        },
+                        {
+                            additionalProperties: true,
+                        },
+                    ),
+                },
+                (app) =>
+                    app
+                        .derive(async ({ query }) => {
+                            //[INFO]: Why it handle any route registered after(
+                            const accessTokenData =
+                                await provider.getAccessToken(query.code)
 
-                    return { accessTokenData, state: query.state }
-                })
-                .get(
-                    provider.options.callback.path,
-                    provider.options.callback.onSuccess,
-                )
+                            return { accessTokenData, state: query.state }
+                        })
+                        .get(
+                            "/",
+                            //@ts-ignore ... [TODO]: fix
+                            provider.options.callback.onSuccess,
+                        ),
+            )
     }
     return app
 }
