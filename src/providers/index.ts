@@ -19,8 +19,8 @@ export interface Auth2Options<T> {
     }
     responseType?: "code"
     startRedirectPath?: string
-    callback: {
-        path?: string
+    callback?: {
+        path: string
         //get Elysia handler
         onSuccess: Parameters<
             ElysiaWithCustomRequest<{
@@ -36,9 +36,10 @@ export interface Provider {
     constructor: Function
     authorizationURI: string
     accessTokenURI: string
+    options: Auth2Options<any>
     generateURI: (state?: string) => string
     getAccessToken: (code: string) => Promise<any>
-    options: Auth2Options<any>
+    // getProfile: (accessToken: string) => Promise<any>
 }
 
 export type ElysiaWithCustomRequest<T extends DecoratorBase["request"]> =

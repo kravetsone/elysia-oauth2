@@ -27,6 +27,7 @@ export interface ElysiaAuth2Options {
 export function oauth2<T extends ElysiaAuth2Options>(options: T) {
     const app = new Elysia({
         name: "elysia-oauth2",
+        seed: options,
     })
         .error({
             Oauth2Error,
@@ -89,7 +90,7 @@ export function oauth2<T extends ElysiaAuth2Options>(options: T) {
             app.get(provider.options.startRedirectPath, ({ oauth2 }) =>
                 oauth2.authorize(providerName),
             )
-        if (provider.options.callback.path)
+        if (provider.options.callback)
             app.group(
                 provider.options.callback.path,
                 {
@@ -111,7 +112,7 @@ export function oauth2<T extends ElysiaAuth2Options>(options: T) {
 
                             return { accessTokenData, state: query.state }
                         })
-                        .get("/", provider.options.callback.onSuccess),
+                        .get("/", provider.options.callback!.onSuccess),
             )
     }
     return app

@@ -2,6 +2,17 @@
     "name": "elysia-oauth2",
     "version": "0.0.4",
     "author": "kravets",
+    "keywords": [
+        "elysia",
+        "bun",
+        "oauth2",
+        "google",
+        "vk",
+        "discord",
+        "passport"
+    ],
+    "description": "Elysia plugin for OAuth 2.0 Authorization Code Flow",
+    "license": "ISC",
     "main": "dist/index.js",
     "devDependencies": {
         "bun-types": "latest",
@@ -11,11 +22,9 @@
         "typescript": "^5.3.3"
     },
     "peerDependencies": {
-        "elysia": "^0.7.0",
-        "fast-querystring": "^1.0.0"
+        "elysia": "0.8.0",
+        "fast-querystring": "^1.1.2"
     },
-    "description": "",
-    "license": "ISC",
     "scripts": {
         "prepublishOnly": "tsc",
         "lint": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\"",
