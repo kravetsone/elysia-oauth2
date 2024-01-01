@@ -49,11 +49,14 @@ export type ElysiaWithCustomRequest<T extends DecoratorBase["request"]> =
             {
                 request: T
                 store: {}
+                derive: {}
+                resolve: {}
             },
             {
                 type: {}
                 error: {}
             },
+            {},
             {},
             {},
             false
