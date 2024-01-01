@@ -1,6 +1,6 @@
 {
     "name": "elysia-oauth2",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "author": "kravets",
     "keywords": [
         "elysia",
@@ -16,13 +16,14 @@
     "main": "dist/index.js",
     "devDependencies": {
         "bun-types": "latest",
+        "elysia": "^0.8.7",
         "eslint": "^8.55.0",
         "eslint-kit": "^10.6.0",
         "prettier": "^3.1.1",
         "typescript": "^5.3.3"
     },
     "peerDependencies": {
-        "elysia": "0.8.0",
+        "elysia": "^0.8.0",
         "fast-querystring": "^1.1.2"
     },
     "scripts": {
@@ -30,5 +31,8 @@
         "lint": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\"",
         "lint:fix": "eslint \"src/**/*.{js,mjs,cjs,ts,mts}\" --fix"
     },
+    "files": [
+        "dist"
+    ],
     "types": "dist/index.d.ts"
 }
