@@ -71,8 +71,9 @@ export class VKAuth2Provider<T extends VKOptions> implements Provider {
                 }),
         )
 
-        if (!res.ok) throw new Oauth2Error(await res.json<AccessTokenFailure>())
+        if (!res.ok)
+            throw new Oauth2Error((await res.json()) as AccessTokenFailure)
 
-        return res.json<VKAccessTokenResponse>()
+        return res.json() as Promise<VKAccessTokenResponse>
     }
 }

@@ -65,8 +65,9 @@ export class GoogleProvider<T extends GoogleOptions> implements Provider {
             },
         })
 
-        if (!res.ok) throw new Oauth2Error(await res.json<AccessTokenFailure>())
+        if (!res.ok)
+            throw new Oauth2Error((await res.json()) as AccessTokenFailure)
 
-        return res.json<GoogleAccessTokenResponse>()
+        return res.json() as Promise<GoogleAccessTokenResponse>
     }
 }

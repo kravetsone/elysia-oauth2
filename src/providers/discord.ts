@@ -92,8 +92,9 @@ export class DiscordProvider<T extends DiscordOptions> implements Provider {
             },
         })
 
-        if (!res.ok) throw new Oauth2Error(await res.json<AccessTokenFailure>())
+        if (!res.ok)
+            throw new Oauth2Error((await res.json()) as AccessTokenFailure)
 
-        return res.json<DiscordAccessTokenResponse>()
+        return res.json() as Promise<DiscordAccessTokenResponse>
     }
 }
