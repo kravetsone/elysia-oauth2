@@ -1,4 +1,4 @@
-import Elysia, { DecoratorBase } from "elysia"
+import { Handler } from "elysia"
 
 export * from "./discord"
 export * from "./google"
@@ -22,12 +22,18 @@ export interface Auth2Options<T> {
     callback?: {
         path: string
         //get Elysia handler
-        onSuccess: Parameters<
-            ElysiaWithCustomRequest<{
-                accessTokenData: T
-                state: string | undefined
-            }>["get"]
-        >[1]
+        onSuccess: Handler<
+            {},
+            {
+                request: {
+                    accessTokenData: T
+                    state: string | undefined
+                }
+                store: {}
+                derive: {}
+                resolve: {}
+            }
+        >
     }
     callbackURI: string
 }
@@ -41,24 +47,3 @@ export interface Provider {
     getAccessToken: (code: string) => Promise<any>
     // getProfile: (accessToken: string) => Promise<any>
 }
-
-export type ElysiaWithCustomRequest<T extends DecoratorBase["request"]> =
-    InstanceType<
-        typeof Elysia<
-            "",
-            {
-                request: T
-                store: {}
-                derive: {}
-                resolve: {}
-            },
-            {
-                type: {}
-                error: {}
-            },
-            {},
-            {},
-            {},
-            false
-        >
-    >
