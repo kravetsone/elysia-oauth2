@@ -4,24 +4,20 @@ import type { GetProvider, Providers, Shift } from "./utils";
 
 export * from "arctic";
 
-export interface ElysiaAuth2Options {
-	providers: {
-		[K in Providers]?: ConstructorParameters<(typeof arctic)[K]>;
-	};
-}
+export type ElysiaAuth2Options = {
+	[K in Providers]?: ConstructorParameters<(typeof arctic)[K]>;
+};
 
 export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 	// @ts-expect-error
 	const providers: {
 		// @ts-expect-error
-		[K in keyof Options["providers"]]: GetProvider<K>;
+		[K in keyof Options]: GetProvider<K>;
 	} = {};
 
-	for (const provider of Object.keys(
-		options.providers,
-	) as (keyof Options["providers"])[]) {
+	for (const provider of Object.keys(options) as (keyof Options)[]) {
 		// @ts-expect-error
-		providers[provider] = new arctic[provider](...options.providers[provider]);
+		providers[provider] = new arctic[provider](...options[provider]);
 	}
 
 	return new Elysia({ name: "elysia-oauth2" })
@@ -29,7 +25,7 @@ export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 		.derive({ as: "global" }, ({ set, cookie, query }) => {
 			return {
 				oauth2: {
-					redirect: async <Provider extends keyof Options["providers"]>(
+					redirect: async <Provider extends keyof Options>(
 						provider: Provider,
 						...options: Shift<
 							Parameters<
@@ -49,7 +45,7 @@ export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 						);
 						set.redirect = url.href;
 					},
-					authorize: async <Provider extends keyof Options["providers"]>(
+					authorize: async <Provider extends keyof Options>(
 						provider: Provider,
 					): Promise<
 						Awaited<
@@ -69,7 +65,7 @@ export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 					},
 					refresh: async <
 						// @ts-expect-error
-						Provider extends RefreshableProviders<keyof Options["providers"]>,
+						Provider extends RefreshableProviders<keyof Options>,
 					>(
 						provider: Provider,
 						...options: Shift<
