@@ -1,6 +1,6 @@
 # elysia-oauth2
 
-Currently, if provider has not only 1 parameters in `validateAuthorizationCode`, the provider is not supported.
+Currently, if the provider has a **codeVerifier**, you have to work with it yourself.
 
 Powered by [Arctic](https://arctic.js.org/) with more than 42 oauth2 providers!
 
@@ -22,13 +22,13 @@ new Elysia()
             VK: ["clientID", "clientSecret", "RedirectURI"],
         })
     )
-    .onError(console.error)
     .get("/auth/vk", ({ oauth2 }) => oauth2.redirect("VK"))
     .get("/auth/vk/callback", async ({ oauth2 }) => {
         const token = await oauth2.authorize("VK");
 
         // send request to API with token
     })
+    .onError(console.error)
     .listen(3001);
 ```
 

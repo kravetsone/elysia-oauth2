@@ -48,18 +48,23 @@ export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 					},
 					authorize: async <Provider extends keyof Options>(
 						provider: Provider,
+						...options: Shift<
+							// @ts-expect-error
+							Parameters<GetProvider<Provider>["validateAuthorizationCode"]>
+						>
 					): Promise<
 						Awaited<
 							// @ts-expect-error
 							ReturnType<GetProvider<Provider>["validateAuthorizationCode"]>
 						>
 					> => {
-						if (cookie.state.value !== query.value)
+						if (cookie.state.value !== query.state)
 							throw Error("state mismatch");
 
 						// @ts-expect-error
 						const tokens = await providers[provider].validateAuthorizationCode(
 							query.code,
+							...options,
 						);
 
 						return tokens;
