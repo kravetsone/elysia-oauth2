@@ -1,38 +1,40 @@
 {
-  "name": "elysia-oauth2",
-  "version": "0.0.7",
-  "author": "kravets",
-  "keywords": [
-    "elysia",
-    "bun",
-    "oauth2",
-    "google",
-    "vk",
-    "discord",
-    "passport"
-  ],
-  "description": "Elysia plugin for OAuth 2.0 Authorization Code Flow",
-  "license": "ISC",
-  "main": "dist/index.js",
-  "devDependencies": {
-    "@biomejs/biome": "1.6.4",
-    "@types/bun": "^1.0.12",
-    "elysia": "^1.0.13",
-    "typescript": "^5.4.5"
-  },
-  "peerDependencies": {
-    "elysia": "^1.0.6"
-  },
-  "scripts": {
-    "prepublishOnly": "tsc",
-    "lint": "bun check ./src/",
-    "lint:fix": "bun lint --apply"
-  },
-  "files": [
-    "dist"
-  ],
-  "types": "dist/index.d.ts",
-  "dependencies": {
-    "arctic": "^1.5.0"
-  }
+    "name": "elysia-oauth2",
+    "version": "0.1.0",
+    "author": "kravets",
+    "type": "commonjs",
+    "keywords": [
+        "elysia",
+        "bun",
+        "oauth2",
+        "google",
+        "vk",
+        "discord",
+        "passport",
+        "arctic"
+    ],
+    "description": "Elysia plugin for OAuth 2.0 Authorization Code Flow",
+    "license": "ISC",
+    "main": "dist/index.js",
+    "devDependencies": {
+        "@biomejs/biome": "1.6.4",
+        "@types/bun": "^1.0.12",
+        "elysia": "^1.0.13",
+        "typescript": "^5.4.5"
+    },
+    "peerDependencies": {
+        "elysia": "^1.0.6"
+    },
+    "scripts": {
+        "prepublishOnly": "tsc",
+        "lint": "bun check ./src/",
+        "lint:fix": "bun lint --apply"
+    },
+    "files": [
+        "dist"
+    ],
+    "types": "dist/index.d.ts",
+    "dependencies": {
+        "arctic": "*"
+    }
 }
