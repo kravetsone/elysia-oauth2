@@ -1,113 +1,27 @@
-import Elysia, { t } from "elysia";
-import { Oauth2Error } from "./oauth2Error";
-import {
-	DiscordProvider,
-	GoogleProvider,
-	type Provider,
-	VKAuth2Provider,
-} from "./providers";
+import * as arctic from "arctic";
+import Elysia from "elysia";
 
-const providersMapper = {
-	vk: VKAuth2Provider,
-	discord: DiscordProvider,
-	google: GoogleProvider,
-};
+export * from "arctic";
 
-type TProviderNames = keyof typeof providersMapper;
+const notProviders = [
+	"generateCodeVerifier",
+	"generateState",
+	"OAuth2RequestError",
+] as const;
+
+type Providers = Exclude<keyof typeof arctic, (typeof notProviders)[number]>;
+
+type A = ConstructorParameters<(typeof arctic)["AniList"]>;
 
 export interface ElysiaAuth2Options {
 	providers: {
-		[K in TProviderNames]?: ConstructorParameters<
-			(typeof providersMapper)[K]
-		>[0];
+		[K in Providers]?: ConstructorParameters<(typeof arctic)[K]>;
 	};
 }
 
-// [TODO:] Implement unique state for def CSRF
-export function oauth2<T extends ElysiaAuth2Options>(options: T) {
-	const app = new Elysia({
-		name: "elysia-oauth2",
-		seed: options,
-	})
-		.error({
-			Oauth2Error,
-		})
-		.derive({ as: "global" }, ({ set }) => ({
-			oauth2: {
-				/**
-				 * Generate and redirect to oauth2 link
-				 */
-				authorize: <P extends keyof T["providers"]>(
-					providerName: P,
-					state?: string,
-				) => {
-					// [INFO] keyof T["providers"] is not union type...
-					const name = providerName as TProviderNames;
-					if (!options.providers[name])
-						throw new Error(`Please add ${name} provider options to oauth()`);
+// @ts-expect-error
+console.log(Object.keys(arctic).filter((x) => !notProviders.includes(x)));
 
-					//@ts-expect-error [TODO] value is union type
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
-					const provider = new providersMapper[name](options.providers[name]!);
-					set.redirect = provider.generateURI(state);
-				},
-				/**
-				 * Get the access token data. The code from the provider redirection is required
-				 */
-				getAccessToken: <T extends keyof typeof options.providers>(
-					providerName: T,
-					code: string,
-				): ReturnType<
-					(typeof providersMapper)[T]["prototype"]["getAccessToken"]
-				> => {
-					// [INFO] keyof T["providers"] is not union type...
-					const name = providerName as TProviderNames;
-					if (!options.providers[name])
-						throw new Error(`Please add ${name} provider options to oauth()`);
-
-					//@ts-expect-error [TODO] value is union type
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
-					const provider = new providersMapper[name](options.providers[name]!);
-
-					return provider.getAccessToken(code);
-				},
-			},
-		}));
-	for (const [key, value] of Object.entries(options.providers)) {
-		//[INFO] [key: string] in method Object.entries break union types
-		const providerName = key as TProviderNames;
-		//@ts-expect-error [TODO] value is union type
-		const provider = new providersMapper[providerName](value) as Provider;
-
-		// [INFO] startRedirectPath is entrypoint
-		if (provider.options.startRedirectPath)
-			app.get(provider.options.startRedirectPath, ({ oauth2 }) =>
-				oauth2.authorize(providerName),
-			);
-		if (provider.options.callback)
-			app.group(
-				provider.options.callback.path,
-				{
-					query: t.Object(
-						{
-							code: t.String(),
-							state: t.Optional(t.String()),
-						},
-						{
-							additionalProperties: true,
-						},
-					),
-				},
-				(app) =>
-					app
-						.derive(async ({ query }) => {
-							const accessTokenData = await provider.getAccessToken(query.code);
-
-							return { accessTokenData, state: query.state };
-						})
-						// biome-ignore lint/style/noNonNullAssertion: <explanation>
-						.get("/", provider.options.callback!.onSuccess),
-			);
-	}
-	return app;
+export function oauth2(options: ElysiaAuth2Options) {
+	return new Elysia({ name: "elysia-oauth2" });
 }
