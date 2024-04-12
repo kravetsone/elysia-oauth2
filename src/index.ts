@@ -1,17 +1,8 @@
 import * as arctic from "arctic";
 import Elysia from "elysia";
+import type { GetProvider, Providers, Shift } from "./utils";
 
 export * from "arctic";
-
-const notProviders = [
-	"generateCodeVerifier",
-	"generateState",
-	"OAuth2RequestError",
-] as const;
-
-type Providers = Exclude<keyof typeof arctic, (typeof notProviders)[number]>;
-
-type A = ConstructorParameters<(typeof arctic)["AniList"]>;
 
 export interface ElysiaAuth2Options {
 	providers: {
@@ -19,9 +10,81 @@ export interface ElysiaAuth2Options {
 	};
 }
 
-// @ts-expect-error
-console.log(Object.keys(arctic).filter((x) => !notProviders.includes(x)));
+export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
+	// @ts-expect-error
+	const providers: {
+		// @ts-expect-error
+		[K in keyof Options["providers"]]: GetProvider<K>;
+	} = {};
 
-export function oauth2(options: ElysiaAuth2Options) {
-	return new Elysia({ name: "elysia-oauth2" });
+	for (const provider of Object.keys(
+		options.providers,
+	) as (keyof Options["providers"])[]) {
+		// @ts-expect-error
+		providers[provider] = new arctic[provider](...options.providers[provider]);
+	}
+
+	return new Elysia({ name: "elysia-oauth2" })
+		.error("OAUTH2_REQUEST_ERROR", arctic.OAuth2RequestError)
+		.derive({ as: "global" }, ({ set, cookie, query }) => {
+			return {
+				oauth2: {
+					redirect: async <Provider extends keyof Options["providers"]>(
+						provider: Provider,
+						...options: Shift<
+							Parameters<
+								// @ts-expect-error works fine
+								GetProvider<Provider>["createAuthorizationURL"]
+							>
+						>
+					) => {
+						const state = arctic.generateState();
+
+						cookie.state.value = state;
+
+						// @ts-expect-error
+						const url = await providers[provider].createAuthorizationURL(
+							state,
+							...options,
+						);
+						set.redirect = url.href;
+					},
+					authorize: async <Provider extends keyof Options["providers"]>(
+						provider: Provider,
+					): Promise<
+						Awaited<
+							// @ts-expect-error
+							ReturnType<GetProvider<Provider>["validateAuthorizationCode"]>
+						>
+					> => {
+						if (cookie.state.value !== query.value)
+							throw Error("state mismatch");
+
+						// @ts-expect-error
+						const tokens = await providers[provider].validateAuthorizationCode(
+							query.code,
+						);
+
+						return tokens;
+					},
+					refresh: async <
+						// @ts-expect-error
+						Provider extends RefreshableProviders<keyof Options["providers"]>,
+					>(
+						provider: Provider,
+						...options: Shift<
+							Parameters<GetProvider<Provider>["refreshAccessToken"]>
+						>
+					): Promise<
+						Awaited<ReturnType<GetProvider<Provider>["refreshAccessToken"]>>
+					> => {
+						const tokens = await providers[provider].refreshAccessToken(
+							...options,
+						);
+
+						return tokens;
+					},
+				},
+			};
+		});
 }
