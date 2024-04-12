@@ -3,6 +3,7 @@ import Elysia from "elysia";
 import type { GetProvider, Providers, Shift } from "./utils";
 
 export * from "arctic";
+export { GetProvider, Providers } from "./utils";
 
 export type ElysiaAuth2Options = {
 	[K in Providers]?: ConstructorParameters<(typeof arctic)[K]>;
