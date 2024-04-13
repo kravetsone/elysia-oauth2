@@ -1,15 +1,22 @@
 import * as arctic from "arctic";
 import Elysia from "elysia";
-import type { GetProvider, Providers, Shift } from "./utils";
+import type {
+	GetProvider,
+	GetProviderAuthorizeOptions,
+	GetProviderAuthorizeReturn,
+	GetProviderRedirectOptions,
+	Providers,
+	RefreshableProviders,
+} from "./utils";
 
 export * from "arctic";
 export { GetProvider, Providers } from "./utils";
 
-export type ElysiaAuth2Options = {
+export type ElysiaOauth2Options = {
 	[K in Providers]?: ConstructorParameters<(typeof arctic)[K]>;
 };
 
-export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
+export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 	// @ts-expect-error
 	const providers: {
 		// @ts-expect-error
@@ -28,16 +35,19 @@ export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 				oauth2: {
 					redirect: async <Provider extends keyof Options>(
 						provider: Provider,
-						...options: Shift<
-							Parameters<
-								// @ts-expect-error works fine
-								GetProvider<Provider>["createAuthorizationURL"]
-							>
-						>
+						//@ts-expect-error
+						...options: GetProviderRedirectOptions<Provider>
 					) => {
 						const state = arctic.generateState();
 
 						cookie.state.value = state;
+
+						// @ts-expect-error
+						if (providers[provider].validateAuthorizationCode.length === 2) {
+							const codeVerifier = arctic.generateCodeVerifier();
+							cookie.codeVerifier.value = codeVerifier;
+							options.unshift(codeVerifier);
+						}
 
 						// @ts-expect-error
 						const url = await providers[provider].createAuthorizationURL(
@@ -48,18 +58,23 @@ export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 					},
 					authorize: async <Provider extends keyof Options>(
 						provider: Provider,
-						...options: Shift<
-							// @ts-expect-error
-							Parameters<GetProvider<Provider>["validateAuthorizationCode"]>
-						>
-					): Promise<
-						Awaited<
-							// @ts-expect-error
-							ReturnType<GetProvider<Provider>["validateAuthorizationCode"]>
-						>
-					> => {
+						// @ts-expect-error
+						...options: GetProviderAuthorizeOptions<Provider>
+						// @ts-expect-error
+					): Promise<GetProviderAuthorizeReturn<Provider>> => {
 						if (cookie.state.value !== query.state)
 							throw Error("state mismatch");
+
+						// @ts-expect-error
+						if (providers[provider].validateAuthorizationCode.length === 2) {
+							if (!cookie.codeVerifier.value)
+								throw new Error(
+									`Bug with ${String(
+										provider,
+									)} and codeVerifier. Please open issue`,
+								);
+							options.unshift(cookie.codeVerifier.value);
+						}
 
 						// @ts-expect-error
 						const tokens = await providers[provider].validateAuthorizationCode(
@@ -74,12 +89,13 @@ export function oauth2<Options extends ElysiaAuth2Options>(options: Options) {
 						Provider extends RefreshableProviders<keyof Options>,
 					>(
 						provider: Provider,
-						...options: Shift<
-							Parameters<GetProvider<Provider>["refreshAccessToken"]>
-						>
+						...options: // @ts-expect-error
+						Parameters<GetProvider<Provider>["refreshAccessToken"]>
 					): Promise<
+						// @ts-expect-error
 						Awaited<ReturnType<GetProvider<Provider>["refreshAccessToken"]>>
 					> => {
+						// @ts-expect-error
 						const tokens = await providers[provider].refreshAccessToken(
 							...options,
 						);
