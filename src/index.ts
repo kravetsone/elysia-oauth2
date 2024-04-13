@@ -41,11 +41,13 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 						const state = arctic.generateState();
 
 						cookie.state.value = state;
+						cookie.state.maxAge = 60 * 10; // 10 min
 
 						// @ts-expect-error
 						if (providers[provider].validateAuthorizationCode.length === 2) {
 							const codeVerifier = arctic.generateCodeVerifier();
 							cookie.codeVerifier.value = codeVerifier;
+							cookie.codeVerifier.maxAge = 60 * 10; // 10 min
 							options.unshift(codeVerifier);
 						}
 
@@ -65,6 +67,8 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 						if (cookie.state.value !== query.state)
 							throw Error("state mismatch");
 
+						cookie.state.remove();
+
 						// @ts-expect-error
 						if (providers[provider].validateAuthorizationCode.length === 2) {
 							if (!cookie.codeVerifier.value)
@@ -74,6 +78,7 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 									)} and codeVerifier. Please open issue`,
 								);
 							options.unshift(cookie.codeVerifier.value);
+							cookie.codeVerifier.remove();
 						}
 
 						// @ts-expect-error
