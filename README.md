@@ -1,6 +1,6 @@
 # elysia-oauth2
 
-Currently, if the provider has a **codeVerifier**, you have to work with it yourself.
+[Elysia](https://elysiajs.com/) plugin for [OAuth 2.0](https://en.wikipedia.org/wiki/OAuth) Authorization Flow.
 
 Powered by [Arctic](https://arctic.js.org/) with more than 42 oauth2 providers!
 
@@ -19,7 +19,11 @@ import { oauth2 } from "elysia-oauth2";
 new Elysia()
     .use(
         oauth2({
-            VK: ["clientID", "clientSecret", "RedirectURI"],
+            VK: [
+                "clientID",
+                "clientSecret",
+                "https://example.com/auth/vk/callback",
+            ],
         })
     )
     .get("/auth/vk", ({ oauth2 }) => oauth2.redirect("VK"))
@@ -28,7 +32,6 @@ new Elysia()
 
         // send request to API with token
     })
-    .onError(console.error)
     .listen(3001);
 ```
 

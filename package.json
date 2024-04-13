@@ -1,19 +1,21 @@
 {
     "name": "elysia-oauth2",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "author": "kravets",
     "type": "commonjs",
     "keywords": [
         "elysia",
         "bun",
         "oauth2",
+        "oauth",
+        "openid",
         "google",
         "vk",
         "discord",
         "passport",
         "arctic"
     ],
-    "description": "Elysia plugin for OAuth 2.0 Authorization Code Flow",
+    "description": "Elysia plugin for OAuth 2.0 Authorization Flow with more than 42 providers",
     "license": "ISC",
     "main": "dist/index.js",
     "devDependencies": {
