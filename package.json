@@ -1,6 +1,6 @@
 {
     "name": "elysia-oauth2",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "author": "kravets",
     "type": "commonjs",
     "keywords": [
@@ -21,11 +21,13 @@
     "devDependencies": {
         "@biomejs/biome": "1.6.4",
         "@types/bun": "^1.0.12",
+        "arctic": "^1.6.2",
         "elysia": "^1.0.13",
         "typescript": "^5.4.5"
     },
     "peerDependencies": {
-        "elysia": "^1.0.6"
+        "elysia": "^1.0.6",
+        "arctic": "*"
     },
     "scripts": {
         "prepublishOnly": "tsc",
@@ -35,8 +37,5 @@
     "files": [
         "dist"
     ],
-    "types": "dist/index.d.ts",
-    "dependencies": {
-        "arctic": "*"
-    }
+    "types": "dist/index.d.ts"
 }
