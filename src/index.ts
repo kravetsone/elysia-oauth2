@@ -10,7 +10,7 @@ import type {
 } from "./utils";
 
 export * from "arctic";
-export { GetProvider, Providers } from "./utils";
+export { GetProvider, Providers, RefreshableProviders } from "./utils";
 
 export type ElysiaOauth2Options = {
 	[K in Providers]?: ConstructorParameters<(typeof arctic)[K]>;
@@ -33,6 +33,31 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 		.derive({ as: "global" }, ({ set, cookie, query }) => {
 			return {
 				oauth2: {
+					createURL: async <Provider extends keyof Options>(
+						provider: Provider,
+						//@ts-expect-error
+						...options: GetProviderRedirectOptions<Provider>
+					): Promise<URL> => {
+						const state = arctic.generateState();
+
+						cookie.state.value = state;
+						cookie.state.maxAge = 60 * 10; // 10 min
+
+						// @ts-expect-error
+						if (providers[provider].validateAuthorizationCode.length === 2) {
+							const codeVerifier = arctic.generateCodeVerifier();
+							cookie.codeVerifier.value = codeVerifier;
+							cookie.codeVerifier.maxAge = 60 * 10; // 10 min
+							options.unshift(codeVerifier);
+						}
+
+						// @ts-expect-error
+						return providers[provider].createAuthorizationURL(
+							state,
+							...options,
+						);
+					},
+					// TODO: reuse createURL method
 					redirect: async <Provider extends keyof Options>(
 						provider: Provider,
 						//@ts-expect-error
