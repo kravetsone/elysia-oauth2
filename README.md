@@ -43,6 +43,9 @@ new Elysia()
     .listen(3001);
 ```
 
+> [!IMPORTANT]
+> You should return `oauth2.redirect` from the handler, because it relies on elysia's [redirect()](https://elysiajs.com/essential/handler.html#redirect) which need to return `Response`
+
 ### CreateURL example
 
 ```ts
