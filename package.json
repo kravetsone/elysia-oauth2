@@ -2,7 +2,7 @@
     "name": "elysia-oauth2",
     "version": "1.2.0",
     "author": "kravets",
-    "type": "commonjs",
+    "type": "module",
     "keywords": [
         "elysia",
         "bun",
@@ -17,13 +17,13 @@
     ],
     "description": "Elysia plugin for OAuth 2.0 Authorization Flow with more than 42 providers",
     "license": "ISC",
-    "main": "dist/index.js",
+    "module": "./dist/index.js",
     "devDependencies": {
-        "@biomejs/biome": "1.6.4",
-        "@types/bun": "^1.0.12",
-        "arctic": "^1.6.2",
-        "elysia": "^1.0.13",
-        "typescript": "^5.4.5"
+        "@biomejs/biome": "1.8.3",
+        "@types/bun": "^1.1.6",
+        "arctic": "^1.9.2",
+        "elysia": "^1.1.2",
+        "typescript": "^5.5.3"
     },
     "peerDependencies": {
         "elysia": "^1.0.6",
