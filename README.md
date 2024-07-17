@@ -2,7 +2,7 @@
 
 [Elysia](https://elysiajs.com/) plugin for [OAuth 2.0](https://en.wikipedia.org/wiki/OAuth) Authorization Flow.
 
-Powered by [Arctic](https://arctic.js.org/) with more than **45** oauth2 providers!
+Powered by [Arctic](https://arctic.js.org/) with more than **48** oauth2 providers!
 
 ## Installation
 
@@ -75,11 +75,13 @@ new Elysia()
 
 ## Supported providers
 
+-   42 School
 -   Amazon Cognito
 -   AniList
 -   Apple
 -   Atlassian
 -   Auth0
+-   Authentik
 -   Bitbucket
 -   Box
 -   Coinbase
@@ -111,6 +113,7 @@ new Elysia()
 -   Slack
 -   Spotify
 -   Strava
+-   Tiltify
 -   Tumblr
 -   Twitch
 -   Twitter
