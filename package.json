@@ -38,9 +38,9 @@
         "arctic": "*"
     },
     "scripts": {
-        "prepublishOnly": "tsc",
-        "lint": "bun check ./src/",
-        "lint:fix": "bun lint --apply"
+        "prepublishOnly": "bunx pkgroll",
+        "lint": "bunx @biomejs/biome check ./src/",
+        "lint:fix": "bun lint --write"
     },
     "files": [
         "dist"
