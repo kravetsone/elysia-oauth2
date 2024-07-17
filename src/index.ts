@@ -10,7 +10,7 @@ import type {
 } from "./utils";
 
 export * from "arctic";
-export { GetProvider, Providers, RefreshableProviders } from "./utils";
+export type { GetProvider, Providers, RefreshableProviders } from "./utils";
 
 export type ElysiaOauth2Options = {
 	[K in Providers]?: ConstructorParameters<(typeof arctic)[K]>;
