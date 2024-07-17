@@ -14,7 +14,7 @@ bun install elysia-oauth2 arctic
 
 if [Arctic](https://arctic.js.org/) will release some new providers, you can update it with
 
-```
+```bash
 bun install arctic@latest
 ```
 
@@ -59,11 +59,11 @@ new Elysia()
             ],
         })
     )
-    .get("/auth/google", ({ oauth2, set }) => {
+    .get("/auth/google", ({ oauth2, redirect }) => {
         const url = await oauth2.createURL("Google");
         url.searchParams.set("access_type", "offline");
 
-        set.redirect = url.href;
+        return redirect(url.href);
     })
     .get("/auth/google/callback", async ({ oauth2 }) => {
         const token = await oauth2.authorize("Google");
