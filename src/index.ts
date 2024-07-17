@@ -1,5 +1,5 @@
 import * as arctic from "arctic";
-import Elysia from "elysia";
+import { Elysia } from "elysia";
 import type {
 	GetProvider,
 	GetProviderAuthorizeOptions,
@@ -82,7 +82,7 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 							...options,
 						);
 
-						return redirect(url.href);
+						return redirect(url.href) as Response;
 					},
 					authorize: async <Provider extends keyof Options>(
 						provider: Provider,
