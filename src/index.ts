@@ -30,7 +30,7 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 
 	return new Elysia({ name: "elysia-oauth2" })
 		.error("OAUTH2_REQUEST_ERROR", arctic.OAuth2RequestError)
-		.derive(({ cookie, query, redirect }) => {
+		.derive(function deriveOauth2Methods({ cookie, query, redirect }) {
 			return {
 				oauth2: {
 					createURL: async <Provider extends keyof Options>(
