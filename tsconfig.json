@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "lib": ["ESNext"],
-        "module": "CommonJS",
+        "lib": ["ESNext", "DOM"],
+        "module": "ESNext",
         "target": "esnext",
-        // "moduleResolution": "bundler",
+        "moduleResolution": "bundler",
         "declaration": true,
         "moduleDetection": "force",
         // "allowImportingTsExtensions": true,
@@ -22,6 +22,5 @@
         "rootDir": "./src",
         "outDir": "./dist"
     },
-    "include": ["src", "test.ts"],
-    "exclude": ["test.ts"]
+    "include": ["src"],
 }

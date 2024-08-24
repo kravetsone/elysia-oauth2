@@ -7,6 +7,7 @@ import type {
 	GetProviderRedirectOptions,
 	Providers,
 	RefreshableProviders,
+	RevokableProviders
 } from "./utils";
 
 export * from "arctic";
@@ -17,11 +18,9 @@ export type ElysiaOauth2Options = {
 };
 
 export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
-	// @ts-expect-error
-	const providers: {
-		// @ts-expect-error
-		[K in keyof Options]: GetProvider<K>;
-	} = {};
+	const providers = {} as {
+		[K in keyof Options]: GetProvider<K & Providers>;
+	};
 
 	for (const provider of Object.keys(options) as (keyof Options)[]) {
 		// @ts-expect-error
@@ -33,28 +32,30 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 		.derive(function deriveOauth2Methods({ cookie, query, redirect }) {
 			return {
 				oauth2: {
-					createURL: async <Provider extends keyof Options>(
+					createURL: <Provider extends keyof Options>(
 						provider: Provider,
 						//@ts-expect-error
 						...options: GetProviderRedirectOptions<Provider>
-					): Promise<URL> => {
+					): URL => {
 						const state = arctic.generateState();
 
 						cookie.state.value = state;
 						cookie.state.maxAge = 60 * 10; // 10 min
 
-						// @ts-expect-error
-						if (providers[provider].validateAuthorizationCode.length === 2) {
+						if (
+							providers[provider].validateAuthorizationCode
+								.length === 2
+						) {
 							const codeVerifier = arctic.generateCodeVerifier();
 							cookie.codeVerifier.value = codeVerifier;
 							cookie.codeVerifier.maxAge = 60 * 10; // 10 min
 							options.unshift(codeVerifier);
 						}
 
-						// @ts-expect-error
 						return providers[provider].createAuthorizationURL(
 							state,
-							...options,
+							// @ts-expect-error
+							...options
 						);
 					},
 					// TODO: reuse createURL method
@@ -68,72 +69,102 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 						cookie.state.value = state;
 						cookie.state.maxAge = 60 * 10; // 10 min
 
-						// @ts-expect-error
-						if (providers[provider].validateAuthorizationCode.length === 2) {
+						if (
+							providers[provider].validateAuthorizationCode
+								.length === 2
+						) {
 							const codeVerifier = arctic.generateCodeVerifier();
 							cookie.codeVerifier.value = codeVerifier;
 							cookie.codeVerifier.maxAge = 60 * 10; // 10 min
 							options.unshift(codeVerifier);
 						}
 
-						// @ts-expect-error
-						const url = await providers[provider].createAuthorizationURL(
-							state,
-							...options,
-						);
+						const url = providers[
+							provider
+							// @ts-expect-error
+						].createAuthorizationURL(state, ...options);
 
+						// @ts-expect-error
 						return redirect(url.href) as Response;
 					},
 					authorize: async <Provider extends keyof Options>(
 						provider: Provider,
 						// @ts-expect-error
 						...options: GetProviderAuthorizeOptions<Provider>
-						// @ts-expect-error
-					): Promise<GetProviderAuthorizeReturn<Provider>> => {
+					): // @ts-expect-error
+					Promise<GetProviderAuthorizeReturn<Provider>> => {
 						if (cookie.state.value !== query.state)
 							throw Error("state mismatch");
 
 						cookie.state.remove();
 
-						// @ts-expect-error
-						if (providers[provider].validateAuthorizationCode.length === 2) {
+						if (
+							providers[provider].validateAuthorizationCode
+								.length === 2
+						) {
 							if (!cookie.codeVerifier.value)
 								throw new Error(
 									`Bug with ${String(
-										provider,
-									)} and codeVerifier. Please open issue`,
+										provider
+									)} and codeVerifier. Please open issue`
 								);
 							options.unshift(cookie.codeVerifier.value);
 							cookie.codeVerifier.remove();
 						}
 
-						// @ts-expect-error
-						const tokens = await providers[provider].validateAuthorizationCode(
-							query.code,
-							...options,
-						);
+						const tokens = await providers[
+							provider
+							// @ts-expect-error
+						].validateAuthorizationCode(query.code, ...options);
 
+						// @ts-expect-error
 						return tokens;
 					},
 					refresh: async <
 						// @ts-expect-error
-						Provider extends RefreshableProviders<keyof Options>,
+						Provider extends RefreshableProviders<keyof Options>
 					>(
 						provider: Provider,
 						...options: // @ts-expect-error
 						Parameters<GetProvider<Provider>["refreshAccessToken"]>
 					): Promise<
-						// @ts-expect-error
-						Awaited<ReturnType<GetProvider<Provider>["refreshAccessToken"]>>
+						Awaited<
+							ReturnType<
+								// @ts-expect-error
+								GetProvider<Provider>["refreshAccessToken"]
+							>
+						>
 					> => {
-						// @ts-expect-error
-						const tokens = await providers[provider].refreshAccessToken(
-							...options,
-						);
+						const tokens = await providers[
+							provider
+							// @ts-expect-error
+						].refreshAccessToken(...options);
 
 						return tokens;
 					},
-				},
+					revoke: async <
+						// @ts-expect-error
+						Provider extends RevokableProviders<keyof Options>
+					>(
+						provider: Provider,
+						...options: // @ts-expect-error
+						Parameters<GetProvider<Provider>["revokeToken"]>
+					): Promise<
+						Awaited<
+							ReturnType<
+								// @ts-expect-error
+								GetProvider<Provider>["revokeToken"]
+							>
+						>
+					> => {
+						const response = await providers[
+							provider
+							// @ts-expect-error
+						].revokeToken(...options);
+
+						return response;
+					}
+				}
 			};
 		})
 		.as("plugin");

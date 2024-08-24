@@ -13,7 +13,7 @@ function getLatestTag() {
 }
 
 const commits = execSync(
-	`git log ${getLatestTag()}..HEAD  --pretty="format:%s%b"`,
+	`git log ${getLatestTag()}..HEAD  --pretty="format:%s%b"`
 )
 	.toString()
 	.trim()
@@ -30,7 +30,7 @@ if (process.env.GITHUB_OUTPUT)
 	appendFileSync(
 		process.env.GITHUB_OUTPUT,
 		`changelog<<${delimiter}${commits.join(
-			EOL.repeat(2),
-		)}${EOL}${delimiter}version=${version}${EOL}`,
+			EOL.repeat(2)
+		)}${EOL}${delimiter}version=${version}${EOL}`
 	);
 else console.log("Not github actions");
