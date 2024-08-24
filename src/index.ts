@@ -39,16 +39,28 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 					): URL => {
 						const state = arctic.generateState();
 
-						cookie.state.value = state;
-						cookie.state.maxAge = 60 * 10; // 10 min
+						cookie.state.set({
+							value: state,
+							secure: true,
+							sameSite: "lax",
+							path: "/",
+							httpOnly: true,
+							maxAge: 60 * 10 // 10 min
+						})
 
 						if (
 							providers[provider].validateAuthorizationCode
 								.length === 2
 						) {
 							const codeVerifier = arctic.generateCodeVerifier();
-							cookie.codeVerifier.value = codeVerifier;
-							cookie.codeVerifier.maxAge = 60 * 10; // 10 min
+							cookie.codeVerifier.set({
+								value: codeVerifier,
+								secure: true,
+								sameSite: "lax",
+								path: "/",
+								httpOnly: true,
+								maxAge: 60 * 10 // 10 min
+							})
 							options.unshift(codeVerifier);
 						}
 
@@ -74,8 +86,14 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 								.length === 2
 						) {
 							const codeVerifier = arctic.generateCodeVerifier();
-							cookie.codeVerifier.value = codeVerifier;
-							cookie.codeVerifier.maxAge = 60 * 10; // 10 min
+							cookie.codeVerifier.set({
+								value: codeVerifier,
+								secure: true,
+								sameSite: "lax",
+								path: "/",
+								httpOnly: true,
+								maxAge: 60 * 10 // 10 min
+							})
 							options.unshift(codeVerifier);
 						}
 
