@@ -46,7 +46,7 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 							path: "/",
 							httpOnly: true,
 							maxAge: 60 * 10 // 10 min
-						})
+						});
 
 						if (
 							providers[provider].validateAuthorizationCode
@@ -60,7 +60,7 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 								path: "/",
 								httpOnly: true,
 								maxAge: 60 * 10 // 10 min
-							})
+							});
 							options.unshift(codeVerifier);
 						}
 
@@ -85,7 +85,7 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 							path: "/",
 							httpOnly: true,
 							maxAge: 60 * 10 // 10 min
-						})
+						});
 
 						if (
 							providers[provider].validateAuthorizationCode
@@ -99,7 +99,7 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 								path: "/",
 								httpOnly: true,
 								maxAge: 60 * 10 // 10 min
-							})
+							});
 							options.unshift(codeVerifier);
 						}
 
