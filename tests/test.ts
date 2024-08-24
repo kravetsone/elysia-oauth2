@@ -90,7 +90,6 @@ new Elysia().use(
 			]);
 
 			authorizationUrl.searchParams.set("access_type", "offline");
-			authorizationUrl.searchParams.set("prompt", "consent");
 
 			return redirect(authorizationUrl.toString());
 		})
@@ -173,14 +172,30 @@ new Elysia().use(
 				return error(500);
 			}
 		})
-		.post("/logout", async ({ cookie: { userRefreshToken } }) => {
-			if (userRefreshToken.value !== undefined) {
-				userRefreshToken.remove();
-			}
+		.post("/logout", async ({ oauth2, error, cookie: { userRefreshToken } }) => {
+			try {
+				if (userRefreshToken.value !== undefined) {
+					const tokens = await oauth2.refresh(
+						"Google",
+						userRefreshToken.value
+					);
+					oauth2.revoke("Google", tokens.accessToken());
+					userRefreshToken.remove();
+					return new Response("Succesfuly Logged Out", {
+						status: 204
+					});
+				} else {
+					console.error("No refresh token found");
+					return error(400);
+				}
+	
+			} catch (err) {
+				if (err instanceof Error) {
+					console.error("Failed to refresh token:", err.message);
+				}
 
-			return new Response("Succesfuly Logged Out", {
-				status: 204
-			});
+				return error(500);
+			}
 		})
 		.put("/refresh-access-token", async ({ oauth2, cookie, error }) => {
 			try {
