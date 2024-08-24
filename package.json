@@ -32,9 +32,9 @@
         "@types/react-dom": "^18.3.0",
         "arctic": "^2.0.0-next.5",
         "elysia": "^1.1.7",
-        "jsonwebtoken": "^9.0.2",
         "pkgroll": "^2.4.2",
-        "typescript": "^5.5.4"
+        "typescript": "^5.5.4",
+         "react-dom": "^18.3.1"
     },
     "peerDependencies": {
         "elysia": "^1.1.0",
@@ -45,11 +45,10 @@
         "lint": "bunx @biomejs/biome check ./src/",
         "lint:fix": "bun lint --write",
         "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,css}\"",
-        "dev": "bun run --watch src/test.ts"
+        "dev": "bun run --watch tests/test.ts"
     },
     "files": [
         "dist"
     ],
-    "types": "dist/index.d.ts",
-    "dependencies": { "react-dom": "^18.3.1" }
+    "types": "dist/index.d.ts"
 }
