@@ -33,8 +33,8 @@
         "arctic": "^2.0.0-next.5",
         "elysia": "^1.1.7",
         "pkgroll": "^2.4.2",
-        "typescript": "^5.5.4",
-         "react-dom": "^18.3.1"
+        "react-dom": "^18.3.1",
+        "typescript": "^5.5.4"
     },
     "peerDependencies": {
         "elysia": "^1.1.0",

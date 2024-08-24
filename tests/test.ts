@@ -3,8 +3,7 @@ import { oauth2 } from "../src";
 import { staticPlugin } from "@elysiajs/static";
 import { TestPage } from "./TestPage";
 import { createElement } from "react";
-import { unlinkSync } from "node:fs";
-
+import { rmSync } from "node:fs";
 import { renderToReadableStream } from "react-dom/server.browser";
 
 if (
@@ -15,16 +14,15 @@ if (
 	throw new Error("Google OAuth2 credentials are not set in .env file");
 }
 
-const testBuildFile = Bun.file("./tests/TestBuildPage.js");
+const buildDir = "./build";
 
-if (await testBuildFile.exists()) {
-	unlinkSync("./build/TestBuildPage.js");
-}
+rmSync(buildDir, { recursive: true, force: true });
 
+const buildTimestamp = Date.now();
 const { logs, success } = await Bun.build({
 	entrypoints: ["./tests/PageIndex.tsx"],
 	outdir: "./build",
-	naming: `TestBuildPage.[ext]`,
+	naming: `TestBuildPage-${buildTimestamp}.[ext]`,
 	minify: true,
 	splitting: true,
 	format: "esm"
@@ -48,7 +46,21 @@ const handlePageRequest = async (
 	});
 };
 
-const app = new Elysia().use(
+const fetchUserInfo = async (accessToken: string) => {
+	const response = await fetch(`https://www.googleapis.com/userinfo/v2/me`, {
+		headers: {
+			Authorization: `Bearer ${accessToken}`
+		}
+	});
+	if (!response.ok) {
+		const errorDetails = await response.text();
+		throw new Error(errorDetails);
+	}
+
+	return await response.json();
+};
+
+new Elysia().use(
 	oauth2({
 		Google: [
 			process.env.GOOGLE_CLIENT_ID,
@@ -62,7 +74,15 @@ const app = new Elysia().use(
 				prefix: ""
 			})
 		)
-		.get("/", () => handlePageRequest(TestPage, "/TestBuildPage.js"))
+		.get("/", () =>
+			handlePageRequest(TestPage, `TestBuildPage-${buildTimestamp}.js`)
+		)
+		.get("/test-page-1", () =>
+			handlePageRequest(TestPage, `TestBuildPage-${buildTimestamp}.js`)
+		)
+		.get("/test-page-2", () =>
+			handlePageRequest(TestPage, `TestBuildPage-${buildTimestamp}.js`)
+		)
 		.get("/auth/google", async ({ oauth2, redirect }) => {
 			const authorizationUrl = oauth2.createURL("Google", [
 				"https://www.googleapis.com/auth/userinfo.profile",
@@ -107,48 +127,135 @@ const app = new Elysia().use(
 				}
 			}
 		)
-		.get("/auth-status", ({ cookie: { userRefreshToken } }) => {
-			const isLoggedIn = userRefreshToken.value !== undefined;
+		.get(
+			"/auth-status",
+			async ({ oauth2, error, cookie: { userRefreshToken } }) => {
+				try {
+					let isLoggedIn = false;
+					let user = {};
 
-			return new Response(JSON.stringify({ isLoggedIn }), {
-				headers: { "Content-Type": "application/json" }
-			});
+					if (userRefreshToken.value !== undefined) {
+						isLoggedIn = true;
+						const tokens = await oauth2.refresh(
+							"Google",
+							userRefreshToken.value
+						);
+
+						user = await fetchUserInfo(tokens.accessToken());
+					}
+
+					return new Response(JSON.stringify({ isLoggedIn, user }), {
+						headers: { "Content-Type": "application/json" }
+					});
+				} catch (err) {
+					if (err instanceof Error) {
+						console.error("Failed to refresh token:", err.message);
+					}
+
+					return error(500);
+				}
+			}
+		)
+		.put("/set-redirect-url", ({ headers, cookie, error }) => {
+			try {
+				const url = headers["referer"] || "/";
+
+				cookie.redirectUrl.value = url;
+
+				return new Response(null, {
+					status: 204
+				});
+			} catch (err) {
+				if (err instanceof Error) {
+					console.error("Failed to refresh token:", err.message);
+				}
+
+				return error(500);
+			}
 		})
-		.post("/set-redirect-url", ({ request, cookie }) => {
-			const url = request.headers.get("Referer") || "/";
-
-			cookie.redirectUrl.value = url;
-
-			return new Response(null, {
-				status: 204
-			});
-		})
-
 		.post("/logout", async ({ cookie: { userRefreshToken } }) => {
 			if (userRefreshToken.value !== undefined) {
 				userRefreshToken.remove();
 			}
 
-			return new Response(null, {
+			return new Response("Succesfuly Logged Out", {
 				status: 204
 			});
 		})
-		.post(
-			"/revoke-token",
+		.put("/refresh-access-token", async ({ oauth2, cookie, error }) => {
+			try {
+				if (cookie.userRefreshToken.value !== undefined) {
+					await oauth2.refresh(
+						"Google",
+						cookie.userRefreshToken.value
+					);
+
+					return new Response("Token refreshed", {
+						status: 204
+					});
+				} else {
+					console.error("No refresh token found");
+					return error(400);
+				}
+			} catch (err) {
+				if (err instanceof Error) {
+					console.error("Failed to refresh token:", err.message);
+				}
+
+				return error(500);
+			}
+		})
+		.put(
+			"/revoke-refresh-token",
 			async ({ oauth2, error, cookie: { userRefreshToken } }) => {
 				try {
 					if (userRefreshToken.value !== undefined) {
-						const response = await oauth2.revoke(
-							"Google",
-							userRefreshToken.value
-						);
+						await oauth2.revoke("Google", userRefreshToken.value);
 
 						userRefreshToken.remove();
 
-						return response;
+						return new Response("Refresh token revoked", {
+							status: 204
+						});
 					} else {
+						console.error("No refresh token found");
 						return error(400);
 					}
+				} catch (err) {
+					if (err instanceof Error) {
+						console.error("Failed to revoke token:", err.message);
+					}
+
+					return error(500);
+				}
+			}
+		)
+		.put(
+			"/revoke-access-token",
+			async ({ oauth2, error, cookie: { userRefreshToken } }) => {
+				try {
+					if (userRefreshToken.value === undefined) {
+						console.error("No refresh token found");
+						return error(400);
+					}
+
+					const tokens = await oauth2.refresh(
+						"Google",
+						userRefreshToken.value
+					);
+
+					const accessToken = tokens.accessToken();
+
+					if (!accessToken) {
+						console.error("No access token found");
+						return error(400);
+					}
+
+					await oauth2.revoke("Google", accessToken);
+
+					return new Response("Access token revoked", {
+						status: 204
+					});
 				} catch (err) {
 					if (err instanceof Error) {
 						console.error("Failed to revoke token:", err.message);
