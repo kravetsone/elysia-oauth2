@@ -78,8 +78,14 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 					) => {
 						const state = arctic.generateState();
 
-						cookie.state.value = state;
-						cookie.state.maxAge = 60 * 10; // 10 min
+						cookie.state.set({
+							value: state,
+							secure: true,
+							sameSite: "lax",
+							path: "/",
+							httpOnly: true,
+							maxAge: 60 * 10 // 10 min
+						})
 
 						if (
 							providers[provider].validateAuthorizationCode
