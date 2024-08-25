@@ -66,6 +66,11 @@ new Elysia().use(
 			process.env.GOOGLE_CLIENT_ID,
 			process.env.GOOGLE_CLIENT_SECRET,
 			process.env.GOOGLE_REDIRECT_URI
+		],
+		GitHub: [
+			"client_id",
+			"client_secret",
+			"redirect_uri",
 		]
 	})
 		.use(
@@ -90,7 +95,8 @@ new Elysia().use(
 			]);
 
 			authorizationUrl.searchParams.set("access_type", "offline");
-
+			authorizationUrl.searchParams.set("prompt", "consent");
+			
 			return redirect(authorizationUrl.toString());
 		})
 		.get(
@@ -104,6 +110,8 @@ new Elysia().use(
 				try {
 					const token = await oauth2.authorize("Google");
 
+					console.log("Token:", token);
+					
 					if (token.hasRefreshToken()) {
 						userRefreshToken.set({
 							value: token.refreshToken(),
@@ -141,6 +149,7 @@ new Elysia().use(
 						);
 
 						user = await fetchUserInfo(tokens.accessToken());
+						console.log("User:", user);
 					}
 
 					return new Response(JSON.stringify({ isLoggedIn, user }), {
