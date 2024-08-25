@@ -1,9 +1,12 @@
 import type * as arctic from "arctic";
 
 const notProviders = [
+	"OAuth2Tokens",
 	"generateCodeVerifier",
 	"generateState",
 	"OAuth2RequestError",
+	"ArcticFetchError",
+	"decodeIdToken"
 ] as const;
 
 export type Providers = Exclude<
@@ -11,8 +14,9 @@ export type Providers = Exclude<
 	(typeof notProviders)[number]
 >;
 export type RefreshableProvidersMap<P extends Providers> = {
-	// @ts-expect-error
-	[K in P]: GetProvider<K>["refreshAccessToken"] extends Function ? K : never;
+	[K in P]: GetProvider<K> extends { refreshAccessToken: Function }
+		? K
+		: never;
 };
 
 export type RefreshableProviders<P extends Providers = Providers> = Extract<
@@ -22,6 +26,19 @@ export type RefreshableProviders<P extends Providers = Providers> = Extract<
 			? never
 			: K;
 	}[keyof RefreshableProvidersMap<P>]
+>;
+
+export type RevokableProvidersMap<P extends Providers> = {
+	[K in P]: GetProvider<K> extends { revokeToken: Function } ? K : never;
+};
+
+export type RevokableProviders<P extends Providers = Providers> = Extract<
+	keyof RevokableProvidersMap<P>,
+	{
+		[K in keyof RevokableProvidersMap<P>]: RevokableProvidersMap<P>[K] extends never
+			? never
+			: K;
+	}[keyof RevokableProvidersMap<P>]
 >;
 
 export type GetProvider<Provider extends Providers> = InstanceType<
@@ -39,8 +56,12 @@ export type GetProviderAuthorizeOptions<Provider extends Providers> =
 		GetProvider<Provider>["validateAuthorizationCode"]
 	>["length"] extends 2
 		? Shift<
-				Shift<Parameters<GetProvider<Provider>["validateAuthorizationCode"]>>
-			>
+				Shift<
+					Parameters<
+						GetProvider<Provider>["validateAuthorizationCode"]
+					>
+				>
+		  >
 		: Shift<Parameters<GetProvider<Provider>["validateAuthorizationCode"]>>;
 
 export type GetProviderAuthorizeReturn<Provider extends Providers> = Awaited<
