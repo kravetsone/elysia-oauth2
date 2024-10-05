@@ -62,7 +62,7 @@ new Elysia()
             ],
         })
     )
-    .get("/auth/google", ({ oauth2, redirect }) => {
+    .get("/auth/google", async({ oauth2, redirect }) => {
         const url = await oauth2.createURL("Google");
         url.searchParams.set("access_type", "offline");
 
