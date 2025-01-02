@@ -46,7 +46,9 @@ new Elysia()
     )
     .get("/auth/vk", ({ oauth2 }) => oauth2.redirect("VK"))
     .get("/auth/vk/callback", async ({ oauth2 }) => {
-        const token = await oauth2.authorize("VK");
+        const tokens = await oauth2.authorize("VK");
+
+        const accessToken = tokens.accessToken();
 
         // send request to API with token
     })
@@ -68,18 +70,20 @@ new Elysia()
             Google: [
                 "clientID",
                 "clientSecret",
-                "https://example.com/auth/Google/callback",
+                "https://example.com/auth/google/callback",
             ],
         })
     )
     .get("/auth/google", async ({ oauth2, redirect }) => {
-        const url = await oauth2.createURL("Google");
+        const url = oauth2.createURL("Google", ["email"]);
         url.searchParams.set("access_type", "offline");
 
         return redirect(url.href);
     })
     .get("/auth/google/callback", async ({ oauth2 }) => {
-        const token = await oauth2.authorize("Google");
+        const tokens = await oauth2.authorize("Google");
+
+        const accessToken = tokens.accessToken();
 
         // send request to API with token
     })

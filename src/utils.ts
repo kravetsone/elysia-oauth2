@@ -20,7 +20,7 @@ export type Providers = Exclude<
 	keyof typeof arctic,
 	(typeof notProviders)[number]
 >;
-export type RefreshableProvidersMap<P extends Providers> = {
+export type RefreshableProvidersMap<P extends Providers = Providers> = {
 	[K in P]: GetProvider<K> extends { refreshAccessToken: Function } ? K : never;
 };
 
@@ -52,7 +52,7 @@ export type GetProvider<Provider extends Providers> = InstanceType<
 
 export type GetProviderRedirectOptions<Provider extends Providers> = Parameters<
 	GetProvider<Provider>["validateAuthorizationCode"]
->["length"] extends 2
+>["length"] extends 2 | 3
 	? Shift<Shift<Parameters<GetProvider<Provider>["createAuthorizationURL"]>>>
 	: Shift<Parameters<GetProvider<Provider>["createAuthorizationURL"]>>;
 
@@ -65,9 +65,11 @@ export type GetProviderAuthorizeOptions<Provider extends Providers> =
 			>
 		: Shift<Parameters<GetProvider<Provider>["validateAuthorizationCode"]>>;
 
-export type GetProviderAuthorizeReturn<Provider extends Providers> = Awaited<
-	ReturnType<GetProvider<Provider>["validateAuthorizationCode"]>
->;
+// Removed in v2
+// > validateAuthorizationCode() returns an OAuth2Token instead of a simple object.
+// export type GetProviderAuthorizeReturn<Provider extends Providers> = Awaited<
+// 	ReturnType<GetProvider<Provider>["validateAuthorizationCode"]>
+// >;
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export type Shift<T extends any[]> = ((...t: T) => void) extends (
