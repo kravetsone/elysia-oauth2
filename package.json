@@ -31,6 +31,7 @@
 		"@types/jsonwebtoken": "^9.0.6",
 		"@types/react-dom": "^18.3.0",
 		"arctic": "^2.3.0",
+		"cheerio": "^1.0.0",
 		"elysia": "^1.1.7",
 		"pkgroll": "^2.4.2",
 		"react-dom": "^18.3.1",
