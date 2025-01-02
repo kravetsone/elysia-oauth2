@@ -7,7 +7,7 @@ import type {
 	GetProviderRedirectOptions,
 	Providers,
 	RefreshableProviders,
-	RevokableProviders
+	RevokableProviders,
 } from "./utils";
 
 export * from "arctic";
@@ -45,13 +45,10 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 							sameSite: "lax",
 							path: "/",
 							httpOnly: true,
-							maxAge: 60 * 10 // 10 min
+							maxAge: 60 * 10, // 10 min
 						});
 
-						if (
-							providers[provider].validateAuthorizationCode
-								.length === 2
-						) {
+						if (providers[provider].validateAuthorizationCode.length === 2) {
 							const codeVerifier = arctic.generateCodeVerifier();
 							cookie.codeVerifier.set({
 								value: codeVerifier,
@@ -59,15 +56,14 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 								sameSite: "lax",
 								path: "/",
 								httpOnly: true,
-								maxAge: 60 * 10 // 10 min
+								maxAge: 60 * 10, // 10 min
 							});
 							options.unshift(codeVerifier);
 						}
 
 						return providers[provider].createAuthorizationURL(
 							state,
-							// @ts-expect-error
-							...options
+							...options,
 						);
 					},
 					// TODO: reuse createURL method
@@ -84,13 +80,10 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 							sameSite: "lax",
 							path: "/",
 							httpOnly: true,
-							maxAge: 60 * 10 // 10 min
+							maxAge: 60 * 10, // 10 min
 						});
 
-						if (
-							providers[provider].validateAuthorizationCode
-								.length === 2
-						) {
+						if (providers[provider].validateAuthorizationCode.length === 2) {
 							const codeVerifier = arctic.generateCodeVerifier();
 							cookie.codeVerifier.set({
 								value: codeVerifier,
@@ -98,15 +91,15 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 								sameSite: "lax",
 								path: "/",
 								httpOnly: true,
-								maxAge: 60 * 10 // 10 min
+								maxAge: 60 * 10, // 10 min
 							});
 							options.unshift(codeVerifier);
 						}
 
-						const url = providers[
-							provider
-							// @ts-expect-error
-						].createAuthorizationURL(state, ...options);
+						const url = providers[provider].createAuthorizationURL(
+							state,
+							...options,
+						);
 
 						// @ts-expect-error
 						return redirect(url.href) as Response;
@@ -122,31 +115,27 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 
 						cookie.state.remove();
 
-						if (
-							providers[provider].validateAuthorizationCode
-								.length === 2
-						) {
+						if (providers[provider].validateAuthorizationCode.length === 2) {
 							if (!cookie.codeVerifier.value)
 								throw new Error(
 									`Bug with ${String(
-										provider
-									)} and codeVerifier. Please open issue`
+										provider,
+									)} and codeVerifier. Please open issue`,
 								);
 							options.unshift(cookie.codeVerifier.value);
 							cookie.codeVerifier.remove();
 						}
 
-						const tokens = await providers[
-							provider
-							// @ts-expect-error
-						].validateAuthorizationCode(query.code, ...options);
+						const tokens = await providers[provider].validateAuthorizationCode(
+							query.code,
+							...options,
+						);
 
-						// @ts-expect-error
 						return tokens;
 					},
 					refresh: async <
 						// @ts-expect-error
-						Provider extends RefreshableProviders<keyof Options>
+						Provider extends RefreshableProviders<keyof Options>,
 					>(
 						provider: Provider,
 						...options: // @ts-expect-error
@@ -159,16 +148,15 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 							>
 						>
 					> => {
-						const tokens = await providers[
-							provider
-							// @ts-expect-error
-						].refreshAccessToken(...options);
+						const tokens = await providers[provider].refreshAccessToken(
+							...options,
+						);
 
 						return tokens;
 					},
 					revoke: async <
 						// @ts-expect-error
-						Provider extends RevokableProviders<keyof Options>
+						Provider extends RevokableProviders<keyof Options>,
 					>(
 						provider: Provider,
 						...options: // @ts-expect-error
@@ -181,14 +169,11 @@ export function oauth2<Options extends ElysiaOauth2Options>(options: Options) {
 							>
 						>
 					> => {
-						const response = await providers[
-							provider
-							// @ts-expect-error
-						].revokeToken(...options);
+						const response = await providers[provider].revokeToken(...options);
 
 						return response;
-					}
-				}
+					},
+				},
 			};
 		})
 		.as("plugin");
