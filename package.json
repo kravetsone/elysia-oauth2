@@ -46,6 +46,9 @@
 		"lint:fix": "bun lint --write",
 		"dev": "bun run --watch tests/test.ts"
 	},
+	"overrides": {
+		"bun-types": "^1.1.42"
+	},
 	"files": ["dist"],
 	"types": "dist/index.d.ts"
 }

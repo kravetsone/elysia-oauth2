@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export type UserIdentity = {
 	id: number;
@@ -29,7 +29,7 @@ export const useAuthStatus = () => {
 					name: data.user.name,
 					givenName: data.user.given_name,
 					familyName: data.user.family_name,
-					picture: data.user.picture
+					picture: data.user.picture,
 				});
 			} else {
 				console.error("Failed to check auth status");
@@ -39,6 +39,7 @@ export const useAuthStatus = () => {
 		}
 	};
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		checkAuthStatus();
 	}, []);
@@ -47,6 +48,6 @@ export const useAuthStatus = () => {
 		isLoggedIn,
 		setIsLoggedIn,
 		userIdentity,
-		setUserIdentity
+		setUserIdentity,
 	};
 };

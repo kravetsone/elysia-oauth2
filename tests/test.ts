@@ -19,7 +19,8 @@ const buildDir = "./build";
 rmSync(buildDir, { recursive: true, force: true });
 
 const buildTimestamp = Date.now();
-const { logs, success } = await Bun.build({
+
+await Bun.build({
 	entrypoints: ["./tests/PageIndex.tsx"],
 	outdir: "./build",
 	naming: `TestBuildPage-${buildTimestamp}.[ext]`,
@@ -28,10 +29,6 @@ const { logs, success } = await Bun.build({
 	format: "esm",
 	throw: true,
 });
-
-if (!success) {
-	throw new AggregateError(logs);
-}
 
 const handlePageRequest = async (
 	pageComponent: React.ComponentType,
@@ -48,7 +45,7 @@ const handlePageRequest = async (
 };
 
 const fetchUserInfo = async (accessToken: string) => {
-	const response = await fetch(`https://www.googleapis.com/userinfo/v2/me`, {
+	const response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
 		},
@@ -160,7 +157,7 @@ new Elysia().use(
 		)
 		.put("/set-redirect-url", ({ headers, cookie, error }) => {
 			try {
-				const url = headers["referer"] || "/";
+				const url = headers.referer || "/";
 
 				cookie.redirectUrl.value = url;
 
@@ -189,10 +186,9 @@ new Elysia().use(
 						return new Response("Succesfuly Logged Out", {
 							status: 204,
 						});
-					} else {
-						console.error("No refresh token found");
-						return error(400);
 					}
+					console.error("No refresh token found");
+					return error(400);
 				} catch (err) {
 					if (err instanceof Error) {
 						console.error("Failed to refresh token:", err.message);
@@ -210,10 +206,9 @@ new Elysia().use(
 					return new Response("Token refreshed", {
 						status: 204,
 					});
-				} else {
-					console.error("No refresh token found");
-					return error(400);
 				}
+				console.error("No refresh token found");
+				return error(400);
 			} catch (err) {
 				if (err instanceof Error) {
 					console.error("Failed to refresh token:", err.message);
@@ -234,10 +229,10 @@ new Elysia().use(
 						return new Response("Refresh token revoked", {
 							status: 204,
 						});
-					} else {
-						console.error("No refresh token found");
-						return error(400);
 					}
+
+					console.error("No refresh token found");
+					return error(400);
 				} catch (err) {
 					if (err instanceof Error) {
 						console.error("Failed to revoke token:", err.message);

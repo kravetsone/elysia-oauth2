@@ -1,6 +1,6 @@
-import { useAuthStatus } from "./useAuthStatus";
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import * as React from "react";
+import { useAuthStatus } from "./useAuthStatus";
 
 export const TestPage = () => {
 	const { isLoggedIn, setIsLoggedIn, userIdentity, setUserIdentity } =
@@ -33,7 +33,7 @@ export const TestPage = () => {
 
 	const handleRevokeRefreshToken = async () => {
 		const response = await fetch("/revoke-refresh-token", {
-			method: "PUT"
+			method: "PUT",
 		});
 		if (response.ok) {
 			console.log("Refresh token revoked: ", response);
@@ -45,7 +45,7 @@ export const TestPage = () => {
 
 	const handleRevokeAccessToken = async () => {
 		const response = await fetch("/revoke-access-token", {
-			method: "PUT"
+			method: "PUT",
 		});
 		if (response.ok) {
 			console.log("Access token revoked: ", response);
@@ -57,7 +57,7 @@ export const TestPage = () => {
 
 	const handleRefreshAccessToken = async () => {
 		const response = await fetch("/refresh-access-token", {
-			method: "PUT"
+			method: "PUT",
 		});
 		if (response.ok) {
 			console.log("Token refreshed: ", response);
@@ -74,7 +74,7 @@ export const TestPage = () => {
 		width: "100%",
 		backgroundColor: "#fff",
 		color: "#333",
-		overflowX: "hidden"
+		overflowX: "hidden",
 	};
 
 	const headerStyle: CSSProperties = {
@@ -82,7 +82,7 @@ export const TestPage = () => {
 		padding: "20px",
 		backgroundColor: "#007bff",
 		color: "#fff",
-		textAlign: "center"
+		textAlign: "center",
 	};
 
 	const mainStyle: CSSProperties = {
@@ -91,25 +91,25 @@ export const TestPage = () => {
 		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "center",
-		padding: "20px"
+		padding: "20px",
 	};
 
 	const headingStyle: CSSProperties = {
 		fontSize: "2rem",
-		marginBottom: "20px"
+		marginBottom: "20px",
 	};
 
 	const paragraphStyle: CSSProperties = {
 		fontSize: "1.2rem",
 		marginBottom: "20px",
-		textAlign: "center"
+		textAlign: "center",
 	};
 
 	const navStyle: CSSProperties = {
 		display: "flex",
 		gap: "10px",
 		flexWrap: "wrap",
-		justifyContent: "center"
+		justifyContent: "center",
 	};
 
 	const buttonStyle: CSSProperties = {
@@ -119,29 +119,26 @@ export const TestPage = () => {
 		color: "#fff",
 		border: "none",
 		borderRadius: "5px",
-		cursor: "pointer"
+		cursor: "pointer",
 	};
 
 	const linkStyle: CSSProperties = {
 		textDecoration: "none",
-		color: "#fff"
+		color: "#fff",
 	};
 	return (
 		<html
 			lang="en"
 			style={{
 				width: "100%",
-				height: "100%"
+				height: "100%",
 			}}
 		>
 			<head>
 				<meta charSet="utf-8" />
 				<title>Elysia Oauth2 Test</title>
 				<meta name="description" content="Bun, Elysia & React" />
-				<meta
-					name="viewport"
-					content="width=device-width, initial-scale=1"
-				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<link rel="icon" href="https://reactjs.org/favicon.ico" />
 				<style>{`
    						 * {
@@ -176,23 +173,22 @@ export const TestPage = () => {
 						<div
 							style={{
 								textAlign: "center",
-								marginBottom: "20px"
+								marginBottom: "20px",
 							}}
 						>
 							<img
 								src={userIdentity.picture}
+								// biome-ignore lint/a11y/noRedundantAlt: <explanation>
 								alt="Profile Picture"
 								style={{
 									width: "100px",
 									height: "100px",
 									objectFit: "cover",
 									borderRadius: "50%",
-									border: "none"
+									border: "none",
 								}}
 							/>
-							<h2 style={headingStyle}>
-								Welcome {userIdentity.name}
-							</h2>
+							<h2 style={headingStyle}>Welcome {userIdentity.name}</h2>
 							<h3 style={headingStyle}>User Info</h3>
 							<p style={paragraphStyle}>
 								<strong>Id:</strong> {userIdentity.id}
@@ -208,12 +204,10 @@ export const TestPage = () => {
 								<strong>Name:</strong> {userIdentity.name}
 							</p>
 							<p style={paragraphStyle}>
-								<strong>Given Name:</strong>{" "}
-								{userIdentity.givenName}
+								<strong>Given Name:</strong> {userIdentity.givenName}
 							</p>
 							<p style={paragraphStyle}>
-								<strong>Family Name:</strong>{" "}
-								{userIdentity.familyName}
+								<strong>Family Name:</strong> {userIdentity.familyName}
 							</p>
 							<p style={paragraphStyle}>
 								<strong>Picture:</strong>
@@ -224,7 +218,7 @@ export const TestPage = () => {
 						<div
 							style={{
 								textAlign: "center",
-								marginBottom: "20px"
+								marginBottom: "20px",
 							}}
 						>
 							<h2 style={headingStyle}>User not logged in</h2>
@@ -235,30 +229,35 @@ export const TestPage = () => {
 					)}
 					<nav style={navStyle}>
 						<button
+							type="button"
 							onClick={() => handleGoogleLogin()}
 							style={buttonStyle}
 						>
 							Login
 						</button>
 						<button
+							type="button"
 							onClick={() => handleLogout()}
 							style={buttonStyle}
 						>
 							Logout
 						</button>
 						<button
+							type="button"
 							onClick={() => handleRefreshAccessToken()}
 							style={buttonStyle}
 						>
 							Refresh access token
 						</button>
 						<button
+							type="button"
 							onClick={() => handleRevokeRefreshToken()}
 							style={buttonStyle}
 						>
 							Revoke refresh token
 						</button>
 						<button
+							type="button"
 							onClick={() => handleRevokeAccessToken()}
 							style={buttonStyle}
 						>
