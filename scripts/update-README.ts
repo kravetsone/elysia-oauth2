@@ -32,7 +32,7 @@ const readme = String(await readFile("./README.md"));
 const newReadme = readme
 	.replace(/than \*\*(.*)\*\* oauth2/i, `than **${providers.length}** oauth2`)
 	.replace(
-		"## Supported providers",
+		/## Supported providers[\s\S]*/,
 		`## Supported providers\n\n${providers.map((provider) => `- [${provider.title}](${provider.href})`).join("\n")}`,
 	);
 
