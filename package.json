@@ -27,7 +27,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
 		"@elysiajs/static": "^1.1.0",
-		"@types/bun": "^1.1.7",
+		"@types/bun": "^1.1.14",
 		"@types/jsonwebtoken": "^9.0.6",
 		"@types/react-dom": "^18.3.0",
 		"arctic": "^2.3.0",
