@@ -1,54 +1,52 @@
 {
-    "name": "elysia-oauth2",
-    "version": "1.3.0",
-    "author": "kravets",
-    "type": "module",
-    "keywords": [
-        "elysia",
-        "bun",
-        "oauth2",
-        "oauth",
-        "openid",
-        "google",
-        "vk",
-        "discord",
-        "passport",
-        "arctic"
-    ],
-    "description": "Elysia plugin for OAuth 2.0 Authorization Flow with more than 48 providers",
-    "license": "ISC",
-    "module": "./dist/index.js",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js"
-        }
-    },
-    "devDependencies": {
-        "@biomejs/biome": "1.8.3",
-        "@elysiajs/static": "^1.1.0",
-        "@types/bun": "^1.1.7",
-        "@types/jsonwebtoken": "^9.0.6",
-        "@types/react-dom": "^18.3.0",
-        "arctic": "^2.0.0-next.5",
-        "elysia": "^1.1.7",
-        "pkgroll": "^2.4.2",
-        "react-dom": "^18.3.1",
-        "typescript": "^5.5.4"
-    },
-    "peerDependencies": {
-        "elysia": "^1.1.0",
-        "arctic": "^2.0.0-next.5"
-    },
-    "scripts": {
-        "prepublishOnly": "bunx pkgroll",
-        "lint": "bunx @biomejs/biome check ./src/",
-        "lint:fix": "bun lint --write",
-        "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,css}\"",
-        "dev": "bun run --watch tests/test.ts"
-    },
-    "files": [
-        "dist"
-    ],
-    "types": "dist/index.d.ts"
+	"name": "elysia-oauth2",
+	"version": "1.3.0",
+	"author": "kravets",
+	"type": "module",
+	"keywords": [
+		"elysia",
+		"bun",
+		"oauth2",
+		"oauth",
+		"openid",
+		"google",
+		"vk",
+		"discord",
+		"passport",
+		"arctic"
+	],
+	"description": "Elysia plugin for OAuth 2.0 Authorization Flow with more than 48 providers",
+	"license": "ISC",
+	"module": "./dist/index.js",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.8.3",
+		"@elysiajs/static": "^1.1.0",
+		"@types/bun": "^1.1.7",
+		"@types/jsonwebtoken": "^9.0.6",
+		"@types/react-dom": "^18.3.0",
+		"arctic": "^2.3.0",
+		"elysia": "^1.1.7",
+		"pkgroll": "^2.4.2",
+		"react-dom": "^18.3.1",
+		"typescript": "^5.5.4"
+	},
+	"peerDependencies": {
+		"elysia": "^1.1.0",
+		"arctic": "*"
+	},
+	"scripts": {
+		"prepublishOnly": "bunx pkgroll",
+		"lint": "bunx @biomejs/biome check ./src/",
+		"lint:fix": "bun lint --write",
+		"format": "prettier --write \"./**/*.{js,jsx,ts,tsx,css}\"",
+		"dev": "bun run --watch tests/test.ts"
+	},
+	"files": ["dist"],
+	"types": "dist/index.d.ts"
 }
