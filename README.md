@@ -52,7 +52,7 @@ new Elysia()
 
         // send request to API with token
     })
-    .listen(3001);
+    .listen(3000);
 ```
 
 > [!IMPORTANT]
@@ -87,7 +87,32 @@ new Elysia()
 
         // send request to API with token
     })
-    .listen(3001);
+    .listen(3000);
+```
+
+## Options
+
+You can configure plugin by providing options object in second argument.
+
+```ts
+import { Elysia } from "elysia";
+import { oauth2 } from "elysia-oauth2";
+
+new Elysia().use(
+    oauth2(
+        {},
+        {
+            cookie: {
+                // defaults
+                secure: true,
+                sameSite: "lax",
+                path: "/",
+                httpOnly: true,
+                maxAge: 60 * 30, // 30 min
+            },
+        }
+    )
+);
 ```
 
 ## Supported providers
