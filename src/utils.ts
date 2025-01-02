@@ -1,22 +1,27 @@
 import type * as arctic from "arctic";
 
+// Declined PR in arctic repo https://github.com/pilcrowonpaper/arctic/pull/159
 const notProviders = [
-	"OAuth2Tokens",
+	// helpers
 	"generateCodeVerifier",
 	"generateState",
+	"decodeIdToken",
+
+	// Error classes
 	"OAuth2RequestError",
 	"ArcticFetchError",
-	"decodeIdToken"
-] as const;
+
+	// Other classes
+	"OAuth2Tokens",
+	"CodeChallengeMethod",
+] as const satisfies (keyof typeof arctic)[];
 
 export type Providers = Exclude<
 	keyof typeof arctic,
 	(typeof notProviders)[number]
 >;
 export type RefreshableProvidersMap<P extends Providers> = {
-	[K in P]: GetProvider<K> extends { refreshAccessToken: Function }
-		? K
-		: never;
+	[K in P]: GetProvider<K> extends { refreshAccessToken: Function } ? K : never;
 };
 
 export type RefreshableProviders<P extends Providers = Providers> = Extract<
@@ -56,12 +61,8 @@ export type GetProviderAuthorizeOptions<Provider extends Providers> =
 		GetProvider<Provider>["validateAuthorizationCode"]
 	>["length"] extends 2
 		? Shift<
-				Shift<
-					Parameters<
-						GetProvider<Provider>["validateAuthorizationCode"]
-					>
-				>
-		  >
+				Shift<Parameters<GetProvider<Provider>["validateAuthorizationCode"]>>
+			>
 		: Shift<Parameters<GetProvider<Provider>["validateAuthorizationCode"]>>;
 
 export type GetProviderAuthorizeReturn<Provider extends Providers> = Awaited<
