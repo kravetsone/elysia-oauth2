@@ -44,7 +44,6 @@
 		"prepublishOnly": "bunx pkgroll",
 		"lint": "bunx @biomejs/biome check ./src/",
 		"lint:fix": "bun lint --write",
-		"format": "prettier --write \"./**/*.{js,jsx,ts,tsx,css}\"",
 		"dev": "bun run --watch tests/test.ts"
 	},
 	"files": ["dist"],
