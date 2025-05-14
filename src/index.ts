@@ -116,7 +116,6 @@ export function oauth2<ProvidersOptions extends ElysiaOauth2ProvidersOptions>(
 							...options,
 						);
 
-						// @ts-expect-error
 						return redirect(url.href) as Response;
 					},
 					authorize: async <Provider extends keyof ProvidersOptions>(
@@ -190,5 +189,5 @@ export function oauth2<ProvidersOptions extends ElysiaOauth2ProvidersOptions>(
 				},
 			};
 		})
-		.as("plugin");
+		.as("scoped");
 }

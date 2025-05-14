@@ -14,6 +14,9 @@ const notProviders = [
 	// Other classes
 	"OAuth2Tokens",
 	"CodeChallengeMethod",
+	"UnexpectedErrorResponseBodyError",
+	"UnexpectedResponseError",
+	"OAuth2Client",
 ] as const satisfies (keyof typeof arctic)[];
 
 export type Providers = Exclude<
